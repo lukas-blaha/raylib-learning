@@ -1,24 +1,29 @@
 package main
 
 import (
+	"fmt"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 type Player struct {
 	Sprite       rl.Texture2D
+	Moves        map[string][3]int
 	Source       rl.Rectangle
 	Destination  rl.Rectangle
 	Speed        float32
 	Moving       bool
 	Left, Right  bool
 	Jump, Crouch bool
+	Attack       bool
 	Frames       int
 }
 
-func NewPlayer(sprite rl.Texture2D, src rl.Rectangle, dest rl.Rectangle, speed float32) Player {
+func NewPlayer(sprite rl.Texture2D, moves map[string][3]int, src rl.Rectangle, dest rl.Rectangle, speed float32) Player {
 	return Player{
 		Sprite:      sprite,
 		Source:      src,
+		Moves:       moves,
 		Destination: dest,
 		Speed:       speed,
 		Moving:      false,
@@ -26,6 +31,7 @@ func NewPlayer(sprite rl.Texture2D, src rl.Rectangle, dest rl.Rectangle, speed f
 		Right:       false,
 		Jump:        false,
 		Crouch:      false,
+		Attack:      false,
 		Frames:      0,
 	}
 }
@@ -36,19 +42,36 @@ func (p *Player) resetMotion() {
 	p.Right = false
 	p.Jump = false
 	p.Crouch = false
+	p.Attack = false
+}
+
+func (p *Player) getFrames(move string) (int, int, int) {
+	p.Frames = p.Moves[move][1]
+	return p.Moves[move][0], p.Moves[move][1], p.Moves[move][2]
 }
 
 func (p *Player) update(g *Game) {
+	var y, sx, ex int
+
 	if p.Moving {
 		if p.Right {
 			if p.Source.Width < 0 {
 				p.Source.Width = -p.Source.Width
 			}
+			y, sx, ex = p.getFrames("run")
 		}
 		if p.Left {
 			if p.Source.Width > 0 {
 				p.Source.Width = -p.Source.Width
 			}
+			y, sx, ex = p.getFrames("run")
+			p.Frames = sx
+		}
+		if p.Jump {
+			y, sx, ex = p.getFrames("jump")
+		}
+		if p.Attack {
+			y, sx, ex = p.getFrames("attack")
 		}
 		if g.Frames%8 == 1 {
 			p.Frames++
@@ -57,13 +80,19 @@ func (p *Player) update(g *Game) {
 		p.Frames++
 	}
 
-	if p.Frames > 5 {
-		p.Frames = 0
+	if !p.Moving {
+		y, sx, ex = p.getFrames("idle")
 	}
 
-	if !p.Moving && p.Frames > 1 {
-		p.Frames = 0
+	fmt.Println(y)
+
+	if p.Frames == ex {
+		p.Frames = sx
 	}
+
+	// if !p.Moving && p.Frames > 1 {
+	// 	p.Frames = 0
+	// }
 
 	if p.Source.Width < 0 {
 		p.Source.X = -p.Source.Width * float32(p.Frames)
@@ -84,5 +113,9 @@ func (p *Player) input() {
 		p.Moving = true
 		p.Left = true
 		p.Destination.X -= p.Speed
+	}
+	if rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp) {
+		p.Moving = true
+		p.Jump = true
 	}
 }
