@@ -1,4 +1,4 @@
-module github.com/lukas-blaha/raylib/learning/second
+module github.com/lukas-blaha/raylib/learning/first
 
 go 1.19
 
