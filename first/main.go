@@ -10,7 +10,7 @@ const (
 )
 
 var (
-	frameWidth  float32 = 82
+	frameWidth  float32 = 80
 	frameHeight float32 = 80
 
 	heroSprite rl.Texture2D
@@ -48,7 +48,7 @@ func main() {
 		"dark":   [3]int{10, 0, 10},
 	}
 
-	p := NewPlayer(heroSprite, moves, rl.NewRectangle(0, 2, frameWidth, frameHeight), rl.NewRectangle(spriteX, spriteY, spriteWidth, spriteHeight), 2)
+	p := NewPlayer(heroSprite, moves, rl.NewRectangle(0, 0, frameWidth, frameHeight), rl.NewRectangle(spriteX, spriteY, spriteWidth, spriteHeight), 2)
 
 	g := NewGame(rl.NewColor(90, 90, 90, 1), cam)
 

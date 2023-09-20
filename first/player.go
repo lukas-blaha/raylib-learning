@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -46,7 +44,6 @@ func (p *Player) resetMotion() {
 }
 
 func (p *Player) getFrames(move string) (int, int, int) {
-	p.Frames = p.Moves[move][1]
 	return p.Moves[move][0], p.Moves[move][1], p.Moves[move][2]
 }
 
@@ -58,14 +55,13 @@ func (p *Player) update(g *Game) {
 			if p.Source.Width < 0 {
 				p.Source.Width = -p.Source.Width
 			}
-			y, sx, ex = p.getFrames("run")
+			y, sx, ex = p.getFrames("go")
 		}
 		if p.Left {
 			if p.Source.Width > 0 {
 				p.Source.Width = -p.Source.Width
 			}
-			y, sx, ex = p.getFrames("run")
-			p.Frames = sx
+			y, sx, ex = p.getFrames("go")
 		}
 		if p.Jump {
 			y, sx, ex = p.getFrames("jump")
@@ -84,8 +80,11 @@ func (p *Player) update(g *Game) {
 		y, sx, ex = p.getFrames("idle")
 	}
 
-	fmt.Println(y)
+	p.Source.Y = (p.Source.Height * float32(y)) + 2
 
+	if p.Frames < sx {
+		p.Frames = sx
+	}
 	if p.Frames == ex {
 		p.Frames = sx
 	}
@@ -117,5 +116,9 @@ func (p *Player) input() {
 	if rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp) {
 		p.Moving = true
 		p.Jump = true
+	}
+	if rl.IsKeyDown(rl.KeySpace) {
+		p.Moving = true
+		p.Attack = true
 	}
 }
