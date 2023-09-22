@@ -25,7 +25,7 @@ func NewPlayer(sprite rl.Texture2D, moves map[string][3]int, src rl.Rectangle, d
 		Moves:       moves,
 		Destination: dest,
 		Speed:       speed,
-		JumpHeight:  10,
+		JumpHeight:  5,
 		Moving:      false,
 		Left:        false,
 		Right:       false,
@@ -51,6 +51,7 @@ func (p *Player) getFrames(move string) (int, int, int) {
 
 func (p *Player) update(g *Game) {
 	var y, sx, ex int
+	baseY := float32(0 + p.Sprite.Height)
 
 	if p.Moving {
 		if p.Right {
@@ -68,9 +69,11 @@ func (p *Player) update(g *Game) {
 		if p.Jump {
 			y, sx, ex = p.getFrames("jump")
 			if p.JumpHeight > 0 {
-				p.Destination.Y += p.Speed
+				p.Destination.Y -= p.Speed
+			} else if p.Destination.Y > baseY {
+				p.Destination.Y += float32(g.Gravity)
 			} else {
-				p.Destination.Y -= float32(g.Gravity)
+				p.JumpHeight = 6
 			}
 			p.JumpHeight--
 		}

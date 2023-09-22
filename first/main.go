@@ -16,7 +16,7 @@ var (
 	heroSprite rl.Texture2D
 
 	spriteX      float32 = (screenWidth / 2) + (spriteWidth / 2)
-	spriteY      float32 = screenHeight + spriteHeight
+	spriteY      float32 = 0 + spriteHeight
 	spriteWidth  float32 = 80
 	spriteHeight float32 = 80
 
@@ -41,11 +41,11 @@ func quit() {
 
 func main() {
 	moves := map[string][3]int{
-		"go":     [3]int{0, 0, 9},
-		"idle":   [3]int{5, 6, 12},
-		"attack": [3]int{4, 0, 6},
-		"jump":   [3]int{9, 0, 12},
-		"dark":   [3]int{10, 0, 10},
+		"go":     {0, 0, 9},
+		"idle":   {5, 6, 12},
+		"attack": {4, 0, 6},
+		"jump":   {9, 0, 12},
+		"dark":   {10, 0, 10},
 	}
 
 	p := NewPlayer(heroSprite, moves, rl.NewRectangle(0, 0, frameWidth, frameHeight), rl.NewRectangle(spriteX, spriteY, spriteWidth, spriteHeight), 2)
