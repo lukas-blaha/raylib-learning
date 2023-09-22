@@ -7,6 +7,7 @@ import (
 type Game struct {
 	Background rl.Color
 	Camera     rl.Camera2D
+	Gravity    int
 	Frames     int
 }
 
@@ -14,6 +15,7 @@ func NewGame(bkg rl.Color, cam rl.Camera2D) Game {
 	return Game{
 		Background: bkg,
 		Camera:     cam,
+		Gravity:    1,
 		Frames:     0,
 	}
 }

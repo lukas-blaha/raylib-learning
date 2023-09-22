@@ -10,6 +10,7 @@ type Player struct {
 	Source       rl.Rectangle
 	Destination  rl.Rectangle
 	Speed        float32
+	JumpHeight   int
 	Moving       bool
 	Left, Right  bool
 	Jump, Crouch bool
@@ -24,6 +25,7 @@ func NewPlayer(sprite rl.Texture2D, moves map[string][3]int, src rl.Rectangle, d
 		Moves:       moves,
 		Destination: dest,
 		Speed:       speed,
+		JumpHeight:  10,
 		Moving:      false,
 		Left:        false,
 		Right:       false,
@@ -65,6 +67,12 @@ func (p *Player) update(g *Game) {
 		}
 		if p.Jump {
 			y, sx, ex = p.getFrames("jump")
+			if p.JumpHeight > 0 {
+				p.Destination.Y += p.Speed
+			} else {
+				p.Destination.Y -= float32(g.Gravity)
+			}
+			p.JumpHeight--
 		}
 		if p.Attack {
 			y, sx, ex = p.getFrames("attack")
@@ -88,10 +96,6 @@ func (p *Player) update(g *Game) {
 	if p.Frames == ex {
 		p.Frames = sx
 	}
-
-	// if !p.Moving && p.Frames > 1 {
-	// 	p.Frames = 0
-	// }
 
 	if p.Source.Width < 0 {
 		p.Source.X = -p.Source.Width * float32(p.Frames)

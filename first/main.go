@@ -16,7 +16,7 @@ var (
 	heroSprite rl.Texture2D
 
 	spriteX      float32 = (screenWidth / 2) + (spriteWidth / 2)
-	spriteY      float32 = (screenHeight / 2) + (spriteHeight / 2)
+	spriteY      float32 = screenHeight + spriteHeight
 	spriteWidth  float32 = 80
 	spriteHeight float32 = 80
 
