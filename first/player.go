@@ -126,7 +126,13 @@ func (p *Player) input(g Game) {
 	if p.isOnGround(g) && (rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) {
 		p.Moving = true
 		p.Jump = true
-		p.Destination.Y -= 5
+		for {
+			if p.Destination.Y < g.Ground+200 {
+				p.Destination.Y -= 10
+			} else {
+				break
+			}
+		}
 	}
 	if rl.IsKeyDown(rl.KeySpace) {
 		p.Moving = true
