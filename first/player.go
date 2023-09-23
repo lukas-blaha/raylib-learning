@@ -4,13 +4,14 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+var basyY float32
+
 type Player struct {
 	Sprite       rl.Texture2D
 	Moves        map[string][3]int
 	Source       rl.Rectangle
 	Destination  rl.Rectangle
 	Speed        float32
-	JumpHeight   int
 	Moving       bool
 	Left, Right  bool
 	Jump, Crouch bool
@@ -25,7 +26,6 @@ func NewPlayer(sprite rl.Texture2D, moves map[string][3]int, src rl.Rectangle, d
 		Moves:       moves,
 		Destination: dest,
 		Speed:       speed,
-		JumpHeight:  5,
 		Moving:      false,
 		Left:        false,
 		Right:       false,
@@ -33,6 +33,14 @@ func NewPlayer(sprite rl.Texture2D, moves map[string][3]int, src rl.Rectangle, d
 		Crouch:      false,
 		Attack:      false,
 		Frames:      0,
+	}
+}
+
+func (p *Player) isOnGround(g Game) bool {
+	if p.Destination.Y == g.Ground {
+		return true
+	} else {
+		return false
 	}
 }
 
@@ -51,7 +59,6 @@ func (p *Player) getFrames(move string) (int, int, int) {
 
 func (p *Player) update(g *Game) {
 	var y, sx, ex int
-	baseY := float32(0 + p.Sprite.Height)
 
 	if p.Moving {
 		if p.Right {
@@ -68,14 +75,6 @@ func (p *Player) update(g *Game) {
 		}
 		if p.Jump {
 			y, sx, ex = p.getFrames("jump")
-			if p.JumpHeight > 0 {
-				p.Destination.Y -= p.Speed
-			} else if p.Destination.Y > baseY {
-				p.Destination.Y += float32(g.Gravity)
-			} else {
-				p.JumpHeight = 6
-			}
-			p.JumpHeight--
 		}
 		if p.Attack {
 			y, sx, ex = p.getFrames("attack")
@@ -91,7 +90,11 @@ func (p *Player) update(g *Game) {
 		y, sx, ex = p.getFrames("idle")
 	}
 
-	p.Source.Y = (p.Source.Height * float32(y)) + 2
+	if p.Destination.Y != g.Ground && (!rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) {
+		p.Destination.Y += g.Gravity
+	}
+
+	p.Source.Y = (p.Source.Height * float32(y)) + 3
 
 	if p.Frames < sx {
 		p.Frames = sx
@@ -109,7 +112,7 @@ func (p *Player) update(g *Game) {
 	p.resetMotion()
 }
 
-func (p *Player) input() {
+func (p *Player) input(g Game) {
 	if rl.IsKeyDown(rl.KeyD) || rl.IsKeyDown(rl.KeyRight) {
 		p.Moving = true
 		p.Right = true
@@ -120,9 +123,10 @@ func (p *Player) input() {
 		p.Left = true
 		p.Destination.X -= p.Speed
 	}
-	if rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp) {
+	if p.isOnGround(g) && (rl.IsKeyDown(rl.KeyW) || rl.IsKeyDown(rl.KeyUp)) {
 		p.Moving = true
 		p.Jump = true
+		p.Destination.Y -= 5
 	}
 	if rl.IsKeyDown(rl.KeySpace) {
 		p.Moving = true

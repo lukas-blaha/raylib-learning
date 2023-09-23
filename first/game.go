@@ -7,15 +7,17 @@ import (
 type Game struct {
 	Background rl.Color
 	Camera     rl.Camera2D
-	Gravity    int
+	Ground     float32
+	Gravity    float32
 	Frames     int
 }
 
-func NewGame(bkg rl.Color, cam rl.Camera2D) Game {
+func NewGame(bkg rl.Color, cam rl.Camera2D, ground, gravity float32) Game {
 	return Game{
 		Background: bkg,
 		Camera:     cam,
-		Gravity:    1,
+		Ground:     ground,
+		Gravity:    gravity,
 		Frames:     0,
 	}
 }
